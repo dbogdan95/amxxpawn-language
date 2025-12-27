@@ -9,20 +9,41 @@ This fork is currently maintained and updated by **Bogdan Deaconu**.
 
 ---
 
-## [Unreleased]
-### Added
-- Per-feature settings toggles for language server features (definitions, references, CodeLens, inlay hints, hover, completions, formatting, semantic macro highlighting, and more)
-
 ## [Version 1.0.0] - 2025-12-27
 ### Added
 - Modernized extension to work with current VS Code versions (2024+)
-- Updated Language Server and Client to latest stable APIs
+- Updated Language Server and Client to the latest stable APIs
 - Proper support for `${workspaceFolder}` in:
-  - compiler executable path
+  - compiler executable paths
   - include paths
   - output paths
-- Correct handling of workspace folders (multi-root & debug host compatible)
-- Better diagnostics and logging during compilation
+- Correct handling of workspace folders (multi-root and debug host compatible)
+- Improved diagnostics and logging during compilation
+- Per-feature settings toggles for language server features, including:
+  - go to definition
+  - find references
+  - CodeLens
+  - inlay hints
+  - hover
+  - completions
+  - formatting
+  - semantic macro highlighting
+- Go to definition for:
+  - non-public functions and local functions
+  - macros (`#define`), enums, const, new const, and variables declared in multi-line lists
+  - local variables and function parameters
+- References and CodeLens:
+  - reference counts above declarations
+  - direct jump to the single reference when only one exists
+  - automatic refresh on document changes
+- Parameter inlay hints for:
+  - function calls
+  - natives
+  - stocks
+  - macros
+- Macro highlighting via semantic tokens
+- Auto-indent support (document formatting and on-type), with automatic dedent after `return`, `break`, and `continue`
+- Define value hints for numeric or string defines (shown inline)
 
 ### Changed
 - Upgraded TypeScript to a modern version
@@ -30,11 +51,6 @@ This fork is currently maintained and updated by **Bogdan Deaconu**.
 - Replaced deprecated VS Code APIs (`workspace.rootPath`, legacy imports)
 - Refactored extension lifecycle handling (start/stop Language Client correctly)
 - Improved internal path resolution logic for robustness
-
-### Notes
-- This release is a **non-breaking functional modernization**
-- No language features were removed
-- Fully compatible with existing AMXXPawn projects
 
 ---
 
