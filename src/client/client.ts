@@ -33,39 +33,41 @@ export function activate(ctx: VSC.ExtensionContext) {
   };
 
   const clientOptions: LanguageClientOptions = {
-    documentSelector: [{ language: 'amxxpawn' }],
+    documentSelector: [
+      { language: 'pawn' }
+    ],
     synchronize: {
       configurationSection: [
-        'amxxpawn.language',
-        'amxxpawn.compiler'
+        'pawn.language',
+        'pawn.compiler'
       ],
       fileEvents: VSC.workspace.createFileSystemWatcher('**/*.*')
     }
   };
 
   languageClient = new LanguageClient(
-    'amxxpawn',
-    'AMXXPawn Language Service',
+    'pawn',
+    'Pawn Language Service',
     serverOptions,
     clientOptions
   );
 
-  const outputChannel = VSC.window.createOutputChannel('AMXXPC Output / AMXXPawn');
+  const outputChannel = VSC.window.createOutputChannel('AMXXPC Output / Pawn');
 
-  diagnosticCollection = VSC.languages.createDiagnosticCollection('amxxpawn');
+  diagnosticCollection = VSC.languages.createDiagnosticCollection('pawn');
 
   const commandCompile = VSC.commands.registerCommand(
-    'amxxpawn.compile',
+    'pawn.compile',
     Commands.compile.bind(null, outputChannel, diagnosticCollection)
   );
 
   const commandCompileLocal = VSC.commands.registerCommand(
-    'amxxpawn.compileLocal',
+    'pawn.compileLocal',
     Commands.compileLocal.bind(null, outputChannel, diagnosticCollection)
   );
 
   const commandOpenLocation = VSC.commands.registerCommand(
-    'amxxpawn.openLocation',
+    'pawn.openLocation',
     async (uriString: string, line: number, character: number) => {
       const uri = VSC.Uri.parse(uriString);
       const doc = await VSC.workspace.openTextDocument(uri);
@@ -78,7 +80,7 @@ export function activate(ctx: VSC.ExtensionContext) {
   );
 
   const commandShowReferences = VSC.commands.registerCommand(
-    'amxxpawn.showReferences',
+    'pawn.showReferences',
     async (uriString: string, line: number, character: number, locations: any[]) => {
       const uri = VSC.Uri.parse(uriString);
       const pos = new VSC.Position(line, character);

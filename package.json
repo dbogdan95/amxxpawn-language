@@ -1,7 +1,7 @@
 {
-  "name": "amxxpawn-language",
-  "displayName": "AMXXPawn Language",
-  "description": "AMXXPawn Language Service",
+  "name": "pawn-language",
+  "displayName": "Pawn Language",
+  "description": "Pawn Language Service",
   "version": "0.7.6",
   "publisher": "BogdanDeaconu",
   "license": "GPL-3.0",
@@ -12,18 +12,21 @@
   },
   "author": {
     "name": "KliPPy + BogdanDeaconu",
-    "url": "https://forums.alliedmods.net/member.php?u=228599"
+    "url": "https://dinscurt.com"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/rsKliPPy/amxxpawn-language"
+    "url": "https://github.com/dbogdan95/pawn-language"
   },
   "bugs": {
-    "url": "https://github.com/rsKliPPy/amxxpawn-language/issues"
+    "url": "https://github.com/dbogdan95/pawn-language/issues"
   },
   "keywords": [
     "amxx",
     "amxmodx",
+    "sourcemod",
+    "sourcepawn",
+    "samp",
     "pawn",
     "alliedmodders",
     "dinscurt"
@@ -37,20 +40,22 @@
     "Snippets"
   ],
   "activationEvents": [
+    "onLanguage:pawn"
   ],
   "main": "./build/client/client",
   "contributes": {
     "languages": [
       {
-        "id": "amxxpawn",
+        "id": "pawn",
         "aliases": [
-          "AMXXPawn",
-          "amxxpawn",
-          "AMXX Pawn"
+          "Pawn",
+          "pawn"
         ],
         "extensions": [
           ".sma",
-          ".inc"
+          ".inc",
+          ".sp",
+          ".pwn"
         ],
         "firstLine": "#include\\s+[<\"]?\\s*amxmodx\\s*[>\"]?",
         "configuration": "./language-configuration.json"
@@ -66,8 +71,8 @@
     ],
     "grammars": [
       {
-        "language": "amxxpawn",
-        "scopeName": "source.amxxpawn",
+        "language": "pawn",
+        "scopeName": "source.pawn",
         "path": "./syntaxes/amxxpawn.tmLanguage"
       },
       {
@@ -75,147 +80,147 @@
         "scopeName": "text.pawndoc",
         "path": "./syntaxes/pawndoc.json",
         "injectTo": [
-          "amxxpawn"
+          "source.pawn"
         ]
       }
     ],
     "snippets": [
       {
-        "language": "amxxpawn",
+        "language": "pawn",
         "path": "./snippets/amxxpawn.json"
       }
     ],
     "configuration": {
-      "id": "amxxpawn",
+      "id": "pawn",
       "type": "object",
-      "title": "AMXXPawn Configuration",
+      "title": "Pawn Configuration",
       "properties": {
-        "amxxpawn.language.reparseInterval": {
+        "pawn.language.reparseInterval": {
           "type": "number",
           "default": 1500,
           "description": "Minimum time (ms) between re-parsing the same file"
         },
-        "amxxpawn.language.webApiLinks": {
+        "pawn.language.webApiLinks": {
           "type": "boolean",
           "default": false,
           "description": "Link AMXX includes to the online API reference"
         },
-        "amxxpawn.language.enableDocumentLinks": {
+        "pawn.language.enableDocumentLinks": {
           "type": "boolean",
           "default": true,
           "description": "Enable clickable document links"
         },
-        "amxxpawn.language.enableGoToDefinition": {
+        "pawn.language.enableGoToDefinition": {
           "type": "boolean",
           "default": true,
           "description": "Enable Go to Definition (Ctrl+Click)"
         },
-        "amxxpawn.language.enableReferences": {
+        "pawn.language.enableReferences": {
           "type": "boolean",
           "default": true,
           "description": "Enable Find References"
         },
-        "amxxpawn.language.enableCodeLensReferences": {
+        "pawn.language.enableCodeLensReferences": {
           "type": "boolean",
           "default": true,
           "description": "Show reference counts above declarations"
         },
-        "amxxpawn.language.enableInlayHints": {
+        "pawn.language.enableInlayHints": {
           "type": "boolean",
           "default": true,
           "description": "Enable inlay hints"
         },
-        "amxxpawn.language.enableInlayHintParameters": {
+        "pawn.language.enableInlayHintParameters": {
           "type": "boolean",
           "default": true,
           "description": "Show parameter names inline"
         },
-        "amxxpawn.language.enableInlayHintConstValues": {
+        "pawn.language.enableInlayHintConstValues": {
           "type": "boolean",
           "default": true,
           "description": "Show constant values inline"
         },
-        "amxxpawn.language.enableInlayHintConstValueStrings": {
+        "pawn.language.enableInlayHintConstValueStrings": {
           "type": "boolean",
           "default": false,
           "description": "Show string constant values inline (can be long)"
         },
-        "amxxpawn.language.enableSignatureHelp": {
+        "pawn.language.enableSignatureHelp": {
           "type": "boolean",
           "default": true,
           "description": "Enable signature help while typing"
         },
-        "amxxpawn.language.enableHover": {
+        "pawn.language.enableHover": {
           "type": "boolean",
           "default": true,
           "description": "Enable hover tooltips"
         },
-        "amxxpawn.language.enableHoverConstValues": {
+        "pawn.language.enableHoverConstValues": {
           "type": "boolean",
           "default": true,
           "description": "Show constant values on hover"
         },
-        "amxxpawn.language.enableHoverDefineInlineComments": {
+        "pawn.language.enableHoverDefineInlineComments": {
           "type": "boolean",
           "default": true,
           "description": "Show inline // comments for #define on hover"
         },
-        "amxxpawn.language.enableCompletions": {
+        "pawn.language.enableCompletions": {
           "type": "boolean",
           "default": true,
           "description": "Enable autocomplete suggestions"
         },
-        "amxxpawn.language.enableDocumentSymbols": {
+        "pawn.language.enableDocumentSymbols": {
           "type": "boolean",
           "default": true,
           "description": "Enable document symbols (Ctrl+Shift+O)"
         },
-        "amxxpawn.language.enableDocumentFormatting": {
+        "pawn.language.enableDocumentFormatting": {
           "type": "boolean",
           "default": true,
           "description": "Enable document formatting"
         },
-        "amxxpawn.language.enableOnTypeFormatting": {
+        "pawn.language.enableOnTypeFormatting": {
           "type": "boolean",
           "default": true,
           "description": "Enable on-type formatting while typing"
         },
-        "amxxpawn.language.enableSemanticMacros": {
+        "pawn.language.enableSemanticMacros": {
           "type": "boolean",
           "default": true,
           "description": "Highlight macros"
         },
-        "amxxpawn.language.enableSemanticEnumUsage": {
+        "pawn.language.enableSemanticEnumUsage": {
           "type": "boolean",
           "default": true,
           "description": "Highlight enum usage in [] indexing"
         },
-        "amxxpawn.compiler.executablePath": {
+        "pawn.compiler.executablePath": {
           "type": "string",
           "default": "",
           "description": "Path to amxxpc executable"
         },
-        "amxxpawn.compiler.includePaths": {
+        "pawn.compiler.includePaths": {
           "type": "array",
           "default": [],
           "description": "Additional include directories for the compiler"
         },
-        "amxxpawn.compiler.options": {
+        "pawn.compiler.options": {
           "type": "array",
           "default": [],
           "description": "Extra command-line options for amxxpc"
         },
-        "amxxpawn.compiler.showInfoMessages": {
+        "pawn.compiler.showInfoMessages": {
           "type": "boolean",
           "default": false,
           "description": "Show extra compiler info (args, exit code)"
         },
-        "amxxpawn.compiler.reformatOutput": {
+        "pawn.compiler.reformatOutput": {
           "type": "boolean",
           "default": true,
           "description": "Reformat compiler output for readability"
         },
-        "amxxpawn.compiler.outputType": {
+        "pawn.compiler.outputType": {
           "type": "string",
           "default": "source",
           "description": "Where to write .amxx output: 'source' (same folder) or 'path' (use outputPath)",
@@ -224,12 +229,12 @@
             "path"
           ]
         },
-        "amxxpawn.compiler.outputPath": {
+        "pawn.compiler.outputPath": {
           "type": "string",
           "default": "",
           "description": "Output folder when outputType is 'path'"
         },
-        "amxxpawn.compiler.outputLinkMode": {
+        "pawn.compiler.outputLinkMode": {
           "type": "string",
           "default": "both",
           "description": "Output style for errors/warnings: compact (no links), clickable, or both",
@@ -239,7 +244,7 @@
             "both"
           ]
         },
-        "amxxpawn.compiler.switchToOutput": {
+        "pawn.compiler.switchToOutput": {
           "type": "boolean",
           "default": true,
           "description": "Switch to Output panel after compile"
@@ -248,14 +253,14 @@
     },
     "commands": [
       {
-        "command": "amxxpawn.compile",
+        "command": "pawn.compile",
         "title": "Compile Plugin",
-        "category": "AMXXPawn"
+        "category": "Pawn"
       },
       {
-        "command": "amxxpawn.compileLocal",
+        "command": "pawn.compileLocal",
         "title": "Compile Plugin Local",
-        "category": "AMXXPawn"
+        "category": "Pawn"
       }
     ]
   },

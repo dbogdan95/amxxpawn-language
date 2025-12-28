@@ -189,7 +189,7 @@ connection.onDocumentLinks((params) => {
 connection.onDidChangeConfiguration((params) => {
     const workspacePath = URI.parse(workspaceRoot).fsPath;
 
-    const incoming = params.settings.amxxpawn as Settings.SyncedSettings | undefined;
+    const incoming = params.settings.pawn as Settings.SyncedSettings | undefined;
     syncedSettings = incoming ?? defaultSettings;
     syncedSettings.language = {
         ...defaultSettings.language,
@@ -417,6 +417,9 @@ connection.onCodeLens((params) => {
     const lenses: CodeLens[] = [];
 
     docData.data.callables.forEach((clb) => {
+        if (clb.isMacro && clb.label.startsWith('#define ')) {
+            return;
+        }
         const allRefs = collectReferencesForIdentifier(clb.identifier, docData.data, openDocsMap, openContents);
         const refs = allRefs.filter((loc) => loc.range.start.line !== clb.start.line);
         const refCount = refs.length;
@@ -433,13 +436,13 @@ connection.onCodeLens((params) => {
         if (refCount === 1) {
             command = {
                 title,
-                command: 'amxxpawn.openLocation',
+                command: 'pawn.openLocation',
                 arguments: [refs[0].uri, refs[0].range.start.line, refs[0].range.start.character]
             };
         } else {
             command = {
                 title,
-                command: 'amxxpawn.showReferences',
+                command: 'pawn.showReferences',
                 arguments: [params.textDocument.uri, clb.start.line, clb.start.character, refs]
             };
         }
@@ -535,6 +538,12 @@ function collectReferencesForIdentifier(
   }
 
   const symbols = Helpers.getSymbols(data, dependenciesData);
+  const isDefine = symbols.values.some(
+    (val) => val.identifier === identifier && val.label.startsWith('#define ')
+  );
+  if (isDefine) {
+    return [];
+  }
   const callableIdx = symbols.callables.map((c) => c.identifier).indexOf(identifier);
   const finalIdent = callableIdx >= 0 ? symbols.callables[callableIdx].identifier : identifier;
 
@@ -809,8 +818,8 @@ function collectInlayHints(document: TextDocument, data: Types.DocumentData): In
             if (arg.namedParam) {
                 if (params.indexOf(arg.namedParam) >= 0) {
                     used.add(arg.namedParam);
+                    continue;
                 }
-                continue;
             }
             const nextParam = nextAvailableParam(params, used);
             if (!nextParam) {
@@ -830,7 +839,7 @@ function collectInlayHints(document: TextDocument, data: Types.DocumentData): In
     }
 
     hints.push(...collectDefineValueHints(document, defineValues));
-    return hints;
+    return dedupeInlayHints(hints);
 }
 
 function collectDefineValueHints(document: TextDocument, defineValues: Map<string, string>): InlayHint[] {
@@ -845,7 +854,7 @@ function collectDefineValueHints(document: TextDocument, defineValues: Map<strin
     let inLineComment = false;
     let inBlockComment = false;
     let lineStart = 0;
-    let lineIsDefine = false;
+    let lineIsDefine = isDefineLine(text, lineStart);
 
     while (i < text.length) {
         const ch = text[i];
@@ -925,6 +934,25 @@ function collectDefineValueHints(document: TextDocument, defineValues: Map<strin
     }
 
     return hints;
+}
+
+function dedupeInlayHints(hints: InlayHint[]): InlayHint[] {
+    const seen = new Set<string>();
+    const out: InlayHint[] = [];
+
+    for (const hint of hints) {
+        const pos = hint.position;
+        const label = typeof hint.label === 'string' ? hint.label : JSON.stringify(hint.label);
+        const kind = hint.kind ?? '';
+        const key = `${pos.line}:${pos.character}:${kind}:${label}`;
+        if (seen.has(key)) {
+            continue;
+        }
+        seen.add(key);
+        out.push(hint);
+    }
+
+    return out;
 }
 
 function formatDocumentIndentation(document: TextDocument): TextEdit[] {
@@ -1615,8 +1643,12 @@ function resolveCallableAlias(identifier: string): string | undefined {
 }
 
 documentsManager.onDidOpen((ev) => {
-    let data = new Types.DocumentData(ev.document.uri);
+    let data = new Types.DocumentData(ev.document.uri, detectVariantFromUri(ev.document.uri));
     documentsData.set(ev.document, data);
+    const dep = dependencyManager.getDependency(ev.document.uri);
+    if (dep) {
+        dependenciesData.set(dep, data);
+    }
     reparseDocument(ev.document);
 });
 
@@ -1697,7 +1729,7 @@ function parseFile(fileUri: URI, content: string, data: Types.DocumentData, diag
 
             let depData = dependenciesData.get(dependency);
             if(depData === undefined) { // The dependency file has no data yet
-                depData = new Types.DocumentData(dependency.uri);
+                depData = new Types.DocumentData(dependency.uri, detectVariantFromUri(dependency.uri));
                 dependenciesData.set(dependency, depData);
                 
                 // This should probably be made asynchronous in the future as it probably
@@ -1714,7 +1746,7 @@ function parseFile(fileUri: URI, content: string, data: Types.DocumentData, diag
             myDiagnostics.push({
                 message: `Couldn't resolve include path '${header.filename}'. Check compiler include paths.`,
                 severity: header.isSilent ? DiagnosticSeverity.Information : DiagnosticSeverity.Error,
-                source: 'amxxpawn',
+                source: 'pawn',
                 range: {
                     start: header.start,
                     end: header.end
@@ -1741,6 +1773,10 @@ function reparseDocument(document: TextDocument) {
     const diagnostics: Map<string, Diagnostic[]> = new Map();
 
     parseFile(URI.parse(document.uri), document.getText(), data, diagnostics, false);
+    const dep = dependencyManager.getDependency(document.uri);
+    if (dep) {
+        dependenciesData.set(dep, data);
+    }
     // Find and remove any dangling nodes in the dependency graph
     Helpers.removeUnreachableDependencies(documentsManager.all().map((doc) => documentsData.get(doc)), dependencyManager, dependenciesData);
     diagnostics.forEach((ds, uri) => connection.sendDiagnostics({ uri: uri, diagnostics: ds }));
@@ -1777,5 +1813,20 @@ function resolveIncludePathWithWorkspaceFallback(
 
   // Relative path: make it workspace-relative
   return Path.join(workspacePath, resolved);
+}
+
+function detectVariantFromUri(uri: string): 'amxx' | 'sourcepawn' | 'samp' | 'pawn' {
+    const ext = Path.extname(URI.parse(uri).fsPath).toLowerCase();
+    switch (ext) {
+        case '.sma':
+        case '.inc':
+            return 'amxx';
+        case '.sp':
+            return 'sourcepawn';
+        case '.pwn':
+            return 'samp';
+        default:
+            return 'pawn';
+    }
 }
 

@@ -467,9 +467,10 @@ function parseEnumLine(
     const startChar = rawLine.indexOf(identifier, lineBase + offset);
     const endChar = startChar >= 0 ? startChar + identifier.length : lineBase + offset + identifier.length;
 
+    const enumLabel = enumName ? `enum ${enumName}.${identifier}` : `enum ${identifier}`;
     results.values.push({
       identifier: identifier,
-      label: `const ${identifier}`,
+      label: enumLabel,
       isConst: true,
       isEnumMember: true,
       enumGroup: enumName,
@@ -545,7 +546,7 @@ export function parse(fileUri: URI, content: string, skipStatic: boolean): Types
           results.diagnostics.push({
             message: 'Unmatched closing brace',
             severity: DiagnosticSeverity.Error,
-            source: 'amxxpawn',
+            source: 'pawn',
             range: {
               start: { line: lineIndex, character: contentIndex },
               end: { line: lineIndex, character: contentIndex + 1 }
@@ -636,7 +637,7 @@ export function parse(fileUri: URI, content: string, skipStatic: boolean): Types
           results.diagnostics.push({
             message: 'The #include statement is not terminated properly',
             severity: DiagnosticSeverity.Error,
-            source: 'amxxpawn',
+            source: 'pawn',
             range: {
               start: { line: lineIndex, character: 0 },
               end: { line: lineIndex, character: startIndex + charIndex + 1 }
@@ -650,7 +651,7 @@ export function parse(fileUri: URI, content: string, skipStatic: boolean): Types
           results.diagnostics.push({
             message: 'No extra characters are allowed after an #include statement',
             severity: DiagnosticSeverity.Error,
-            source: 'amxxpawn',
+            source: 'pawn',
             range: {
               start: { line: lineIndex, character: startIndex + charIndex + 1 },
               end: { line: lineIndex, character: Number.MAX_VALUE }
@@ -865,7 +866,7 @@ export function parse(fileUri: URI, content: string, skipStatic: boolean): Types
           results.diagnostics.push({
             message: 'Invalid combination of class specifiers',
             severity: DiagnosticSeverity.Error,
-            source: 'amxxpawn',
+            source: 'pawn',
             range: {
               start: { line: lineIndex, character: 0 },
               end: { line: lineIndex, character: sr.position }
@@ -882,7 +883,7 @@ export function parse(fileUri: URI, content: string, skipStatic: boolean): Types
           results.diagnostics.push({
             message: 'Expected an identifier',
             severity: DiagnosticSeverity.Error,
-            source: 'amxxpawn',
+            source: 'pawn',
             range: {
               start: { line: lineIndex, character: sr.position },
               end: { line: lineIndex, character: tr.position }
@@ -908,7 +909,7 @@ export function parse(fileUri: URI, content: string, skipStatic: boolean): Types
               results.diagnostics.push({
                 message: 'Expected an identifier',
                 severity: DiagnosticSeverity.Error,
-                source: 'amxxpawn',
+                source: 'pawn',
                 range: {
                   start: { line: lineIndex, character: contentIndex + 1 },
                   end: { line: lineIndex, character: tr.position }
@@ -1047,7 +1048,7 @@ export function doHover(
     return {
       contents: [
         {
-          language: 'amxxpawn',
+          language: 'pawn',
           value: callable.label
         },
         {
@@ -1066,7 +1067,7 @@ export function doHover(
       return {
         contents: [
           {
-            language: 'amxxpawn',
+            language: 'pawn',
             value: valueLine ? `${localInfo.label}${valueLine}` : localInfo.label
           }
         ]
@@ -1092,10 +1093,28 @@ export function doHover(
         ? ''
         : (value.assignedValue ? `= ${value.assignedValue}` : ''));
 
+    if (value.isEnumMember) {
+      const enumHover = buildEnumHover(value, symbols.values);
+      if (enumHover) {
+        return {
+          contents: [
+            {
+              language: 'pawn',
+              value: enumHover
+            },
+            {
+              language: 'pawndoc',
+              value: doc
+            }
+          ]
+        };
+      }
+    }
+
     return {
       contents: [
         {
-          language: 'amxxpawn',
+          language: 'pawn',
           value: valueLine ? `${value.label}${valueLine}` : value.label
         },
         {
@@ -1105,6 +1124,23 @@ export function doHover(
       ]
     };
   }
+}
+
+function buildEnumHover(value: Types.ValueDescriptor, values: Types.ValueDescriptor[]): string | null {
+  const enumName = value.enumGroup ?? '';
+  const members = values
+    .filter((v) => v.isEnumMember && v.enumGroup === value.enumGroup)
+    .map((v) => v.identifier);
+  if (members.length === 0) {
+    return null;
+  }
+
+  const header = enumName ? `enum ${enumName}` : 'enum';
+  const lines = members.map((member) => {
+    const marker = member === value.identifier ? ' /* <-- */' : '';
+    return `    ${member},${marker}`;
+  });
+  return `${header}\n{\n${lines.join('\n')}\n}`;
 }
 
 export function doDefinition(

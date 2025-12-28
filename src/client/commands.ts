@@ -62,7 +62,7 @@ function doCompile(executablePath: string, inputPath: string, compilerSettings: 
     } else if(compilerSettings.outputType === 'plugins') {
         // Unfinished
     } else {
-        outputChannel.appendLine('\'amxxpc.compiler.outputType\' setting has an invalid value.');
+        outputChannel.appendLine('\'pawn.compiler.outputType\' setting has an invalid value.');
         return;
     }
     
@@ -195,7 +195,7 @@ function doCompile(executablePath: string, inputPath: string, compilerSettings: 
 export function compile(outputChannel: VSC.OutputChannel, diagnosticCollection: VSC.DiagnosticCollection) {
     outputChannel.clear();
     
-    const compilerSettings = VSC.workspace.getConfiguration('amxxpawn').get('compiler') as Settings.CompilerSettings;
+    const compilerSettings = VSC.workspace.getConfiguration('pawn').get('compiler') as Settings.CompilerSettings;
     if(compilerSettings.switchToOutput === true) {
         outputChannel.show();
     }
@@ -239,7 +239,7 @@ export function compile(outputChannel: VSC.OutputChannel, diagnosticCollection: 
 export function compileLocal(outputChannel: VSC.OutputChannel, diagnosticCollection: VSC.DiagnosticCollection) {
     outputChannel.clear();
     
-    const compilerSettings = VSC.workspace.getConfiguration('amxxpawn').get('compiler') as Settings.CompilerSettings;
+    const compilerSettings = VSC.workspace.getConfiguration('pawn').get('compiler') as Settings.CompilerSettings;
     if(compilerSettings.switchToOutput === true) {
         outputChannel.show();
     }
@@ -283,7 +283,7 @@ export function compileLocal(outputChannel: VSC.OutputChannel, diagnosticCollect
         FS.access(executablePath, FS.constants.F_OK, (err) => {
             if (err) {
                 outputChannel.appendLine(`Can't access amxxpc at: ${executablePath}`);
-                outputChannel.appendLine('Please check amxxpawn.compiler.executablePath and your permissions.');
+                outputChannel.appendLine('Please check pawn.compiler.executablePath and your permissions.');
                 return;
             }
             

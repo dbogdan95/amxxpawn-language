@@ -89,14 +89,16 @@ export class ParserResults {
 
 export class DocumentData {
   public uri: string;
+  public variant: 'amxx' | 'sourcepawn' | 'samp' | 'pawn';
   public reparseTimer: NodeJS.Timeout | null;
   public resolvedInclusions: ResolvedInclusion[];
   public callables: CallableDescriptor[];
   public values: ValueDescriptor[];
   public dependencies: DM.FileDependency[];
 
-  constructor(uri: string) {
+  constructor(uri: string, variant: 'amxx' | 'sourcepawn' | 'samp' | 'pawn') {
     this.uri = uri;
+    this.variant = variant;
     this.reparseTimer = null;
     this.resolvedInclusions = [];
     this.callables = [];

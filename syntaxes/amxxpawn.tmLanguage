@@ -6,6 +6,8 @@
     <array>
         <string>sma</string>
         <string>inc</string>
+        <string>sp</string>
+        <string>pwn</string>
     </array>
     <key>foldingStartMarker</key>
     <string>(?x)
@@ -15,7 +17,7 @@
     <key>foldingStopMarker</key>
     <string>(?&lt;!\*)\*\*/|^\s*\}</string>
     <key>name</key>
-    <string>AMXXPawn</string>
+    <string>Pawn</string>
     <key>patterns</key>
     <array>
         <dict>
@@ -1085,7 +1087,7 @@
         </dict>
     </dict>
     <key>scopeName</key>
-    <string>source.amxxpawn</string>
+    <string>source.pawn</string>
     <key>uuid</key>
     <string>B311E234-7BCD-4821-8455-4A1D8487E654</string>
 </dict>

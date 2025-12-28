@@ -14,6 +14,7 @@ This fork is currently maintained and updated by **Bogdan Deaconu**.
 ### Added
 - Modernized extension to work with current VS Code versions (2024+)
 - Updated Language Server and Client to the latest stable APIs
+- Support for SA-MP Pawn (`.pwn`) and SourcePawn (`.sp`) files
 - Proper support for `${workspaceFolder}` in:
   - compiler executable paths
   - include paths
@@ -63,6 +64,12 @@ This fork is currently maintained and updated by **Bogdan Deaconu**.
 - Replaced deprecated VS Code APIs (`workspace.rootPath`, legacy imports)
 - Refactored extension lifecycle handling (proper Language Client start and stop)
 - Improved internal path resolution logic for better robustness
+- Renamed the extension to **Pawn Language**
+
+### Fixed
+- Removed CodeLens on `#define` declarations
+- Inlay hints for tagged parameters (e.g. `Float:`) now behave correctly
+- Enum member hover now shows enum context and updates when includes change
 
 ---
 
@@ -83,7 +90,7 @@ This fork is currently maintained and updated by **Bogdan Deaconu**.
 - `//#region` and `//#endregion`
 
 ### Fixed
-- Automatically switches to AMXXPawn if there's `#include <amxmodx>` on the first code line
+- Automatically switches to Pawn if there's `#include <amxmodx>` on the first code line
 
 ---
 
@@ -108,13 +115,13 @@ This fork is currently maintained and updated by **Bogdan Deaconu**.
 - Syntax highlight for "native" keyword
 - Append `'('` (or `'()'` if function has no arguments) on function autocompletion
 - Hover information when hovering over functions, variables and constants
-- `amxxpawn.compiler.reformatOutput` - reformats compiler output to clear unimportant information and remove clutter
+- `pawn.compiler.reformatOutput` - reformats compiler output to clear unimportant information and remove clutter
 - Compiler warnings and errors get turned into diagnostics
 
 ### Changed
 - Syntax highlight now highlights only known tags from AMXX
 - Completion search is now case-insensitive
-- `amxxpawn.language.webApiLinks` and `amxxpawn.compiler.showInfoMessages` are now false by default
+- `pawn.language.webApiLinks` and `pawn.compiler.showInfoMessages` are now false by default
 
 ---
 
@@ -122,7 +129,7 @@ This fork is currently maintained and updated by **Bogdan Deaconu**.
 ### Added
 - Suggestions/completions for variables and constants
 - Diagnostics for variable/constant definitions
-- `amxxpawn.compiler.showInfoMessages` setting
+- `pawn.compiler.showInfoMessages` setting
 
 ### Fixed
 - Highlighting for `[]` and `()` pairs
