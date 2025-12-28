@@ -8,12 +8,17 @@ This fork is maintained by **Bogdan Deaconu** and focuses on keeping the extensi
 
 ## Features
 
-- Syntax highlighting for Pawn (`.sma`, `.inc`, `.sp`, `.pwn`) with extension-aware variants
-- Autocomplete for functions, variables, and constants
-- Hover documentation and signature help (including doc-comments)
-- Go to Definition / Peek Definition for functions and global variables
-- Diagnostics from `amxxpc` warnings and errors
-- `#include` / `#tryinclude` parsing, linking, and diagnostics
+- Syntax highlighting for Pawn (`.sma`, `.inc`, `.sp`, `.pwn`) with variant-aware parsing
+- Support for AMXX, SourcePawn, and SA-MP Pawn (by extension)
+- Autocomplete for functions, macros, variables, constants, enums, and enum members
+- Signature help and hover docs (includes doc-comments and inline `#define` comments)
+- Go to Definition / Peek Definition for functions, variables, macros, enums, and locals
+- Find References and CodeLens reference counts
+- Inlay hints for parameters and constant values
+- Semantic tokens for macros and enum usage
+- `#include` / `#tryinclude` parsing, link resolution, and diagnostics
+- Formatting: document and on-type indentation
+- Compiler integration with `amxxpc` diagnostics and output formatting
 - Optional Web API links for default AMXX includes
 
 ## Notes
